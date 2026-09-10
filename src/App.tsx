@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
+import CoordinateTracker from './pages/CoordinateTracker/trackerUsingBSP'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -16,7 +17,7 @@ function App() {
         </div>
       </section> */}
       <Routes>
-        <Route path="/" element={<CoordinateTracker />}>
+        <Route path="/" element={<CoordinateTracker />} />
       </Routes>
     </>
   )
