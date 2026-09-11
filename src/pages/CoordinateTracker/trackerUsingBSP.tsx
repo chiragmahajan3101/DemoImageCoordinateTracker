@@ -16,6 +16,7 @@ export default function trackerUsingBSP() {
   const strokesRef = useRef<any>([]);
   const currentStrokeRef = useRef<any | null>(null);
   const isDrawingRef = useRef(false);
+  const baseImageRef = useRef<ImageData | null>(null);
 
 
   function uploadImage(event: React.ChangeEvent<HTMLInputElement>) {
@@ -48,6 +49,13 @@ export default function trackerUsingBSP() {
       const canvasContext = canvasVar.getContext("2d");
       canvasContext?.drawImage(imageVar, 0, 0, canvasVar.width, canvasVar.height);
 
+      baseImageRef.current = canvasContext?.getImageData(
+        0,
+        0,
+        canvasVar.width,
+        canvasVar.height
+      ) ?? null
+      
       // Deleting all the previously stored strokes for fresh image
       strokesRef.current = [];
       currentStrokeRef.current = null;
@@ -137,6 +145,19 @@ export default function trackerUsingBSP() {
     currentStrokeRef.current = null;
   }
 
+  function resetDrawing() {
+    const canvasVar = canvasRef.current
+    const canvasContext = canvasVar?.getContext('2d')
+
+    if (!canvasContext || !baseImageRef.current) return
+
+    canvasContext.putImageData(baseImageRef.current, 0, 0)
+
+    strokesRef.current = []
+    currentStrokeRef.current = null
+    isDrawingRef.current = false
+  }
+
   function downloadCoordinatesJSON() {
     const strokeValues = strokesRef.current.map((points, index) => {
       const leftmostPoint = points.reduce((leftmost, point) =>
@@ -187,9 +208,16 @@ export default function trackerUsingBSP() {
       <div id="coordinate-tracker" className="m-2 p-5 text-center">
         <h1 className="mb-5">Drawn Shape Coordinate Tracker</h1>
         <div className="text-end mb-2">
+           <button
+            className="btn btn-fossil-primary me-2"
+            onClick={resetDrawing}
+            disabled={!hasImage}
+          >
+            Reset drawing
+          </button>
           <button className="btn btn-fossil-download" onClick={downloadCoordinatesJSON} disabled={!hasImage}>
           Download coordinates
-        </button>
+          </button>
         </div>
         <div className="tracker-section border">
           <div className="row g-0">
