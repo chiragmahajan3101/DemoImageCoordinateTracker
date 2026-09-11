@@ -7,9 +7,9 @@ export default function trackerUsingBSP() {
   //State to store if image is uploaded or not for canvas visibility
   const [hasImage, setHasImage] = useState(false);
   //State to store selected color for brush
-  const [brushColor, setBrushColor] = useState("#00000");
+  const [brushColor, setBrushColor] = useState("#000000");
   // State to store brush size to draw
-  const [brushSize, setBrushSize] = useState(5);
+  const [brushSize, setBrushSize] = useState(7  );
 
 
   // Ref to not render anything on change of its values
@@ -187,65 +187,80 @@ export default function trackerUsingBSP() {
       <div id="coordinate-tracker" className="m-2 p-5 text-center">
         <h1 className="mb-5">Drawn Shape Coordinate Tracker</h1>
         <div className="text-end mb-2">
-          <button className="btn btn-success" onClick={downloadCoordinatesJSON} disabled={!hasImage}>
+          <button className="btn btn-fossil-download" onClick={downloadCoordinatesJSON} disabled={!hasImage}>
           Download coordinates
         </button>
         </div>
-        <div className="d-flex tracker-section justify-content-center border w-100">
-          <div className="img-output border-end p-5 center w-50">
-            <canvas
-              ref={canvasRef}
-              className={`border mw-100 ${hasImage ? "" : "d-none"}`}
-              style={{ cursor: "crosshair", touchAction: "none" }}
-              onPointerDown={startDrawing}
-              onPointerMove={draw}
-              onPointerUp={stopDrawing}
-              onPointerCancel={stopDrawing}
-              onPointerLeave={stopDrawing}
-            />
-          </div>
-          <div className="input p-5 w-50 d-flex flex-column align-items-center">
-            <div className="img-input mb-5">
-              <label htmlFor="image-upload" className="btn btn-primary">
-                Upload image
-              </label>
-              <span className="ms-3 text-muted">{imageName || "No image selected"}</span>
-              <input
-                id="image-upload"
-                type="file"
-                accept="image/*"
-                className="d-none"
-                onChange={uploadImage}
+        <div className="tracker-section border">
+          <div className="row g-0">
+            <div className="img-output border-end col-12 col-md-6 p-3 p-md-5 text-center">
+              <canvas
+                ref={canvasRef}
+                className={`border mw-100 ${hasImage ? '' : 'd-none'}`}
+                style={{ cursor: 'crosshair', touchAction: 'none' }}
+                onPointerDown={startDrawing}
+                onPointerMove={draw}
+                onPointerUp={stopDrawing}
+                onPointerCancel={stopDrawing}
+                onPointerLeave={stopDrawing}
               />
             </div>
-            <div className="brush-input d-flex flex-row justify-content-between">
-              <div className="brush-color-input">
-                <label htmlFor="brush-color" className="form-label d-block">
-                  Brush Color
+
+            <div className="input col-12 col-md-6 p-3 p-md-5 d-flex flex-column align-items-center">
+              <div className="img-input mb-4 d-flex flex-wrap justify-content-center align-items-center gap-2">
+                <label htmlFor="image-upload" className="btn btn-fossil-primary">
+                  Upload Image
                 </label>
 
+                <span className="text-muted text-break">
+                  {imageName || 'No image selected'}
+                </span>
+
                 <input
-                  id="brush-color"
-                  type="color"
-                  className="form-control form-control-color"
-                  value={brushColor}
-                  onChange={(event) => setBrushColor(event?.target.value)}
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="d-none"
+                  onChange={uploadImage}
                 />
               </div>
-              <div className="brush-size-input">
-                <label htmlFor="brush-size" className="form-label">
-                  Brush size: {brushSize}px
-                </label>
 
-                <input
-                  id="brush-size"
-                  type="range"
-                  className="form-range"
-                  min="1"
-                  max="50"
-                  value={brushSize}
-                  onChange={(event) => setBrushSize(Number(event.target.value))}
-                />
+              <div className="brush-input d-flex flex-column flex-sm-row align-items-center align-items-sm-end justify-content-center gap-4 w-100">
+                <div className="brush-color-input">
+                  <label htmlFor="brush-color" className="form-label d-block">
+                    Brush Color
+                  </label>
+
+                  <input
+                    id="brush-color"
+                    type="color"
+                    className="form-control form-control-color"
+                    value={brushColor}
+                    onChange={(event) => setBrushColor(event.target.value)}
+                  />
+                </div>
+
+                <div className="brush-size-input w-100">
+                  <label htmlFor="brush-size" className="form-label">
+                    Brush size: {brushSize}px
+                  </label>
+
+                  <input
+                    id="brush-size"
+                    type="range"
+                    className="form-range brush-slider"
+                    min="1"
+                    max="50"
+                    value={brushSize}
+                    style={
+                      {
+                        '--thumb-size': `${Math.max(10, Math.min(brushSize, 30))}px`,
+                        '--brush-color': brushColor,
+                      } as React.CSSProperties
+                    }
+                    onChange={(event) => setBrushSize(Number(event.target.value))}
+                  />
+                </div>
               </div>
             </div>
           </div>
