@@ -1,6 +1,12 @@
 import { useRef, useState } from "react";
 
 export default function trackerUsingBSP() {
+
+  type Point = {
+    x: number;
+    y: number;
+  };
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const [imageName, setImageName] = useState('');
@@ -9,12 +15,12 @@ export default function trackerUsingBSP() {
   //State to store selected color for brush
   const [brushColor, setBrushColor] = useState("#000000");
   // State to store brush size to draw
-  const [brushSize, setBrushSize] = useState(7  );
+  const [brushSize, setBrushSize] = useState(7);
 
 
   // Ref to not render anything on change of its values
-  const strokesRef = useRef<any>([]);
-  const currentStrokeRef = useRef<any | null>(null);
+  const strokesRef = useRef<Point[][]>([]);
+  const currentStrokeRef = useRef<Point[] | null>(null);
   const isDrawingRef = useRef(false);
   const baseImageRef = useRef<ImageData | null>(null);
 
@@ -71,7 +77,7 @@ export default function trackerUsingBSP() {
   }
 
   // Function to return exact point coordinates to draw as normally drawing on canvas is a slight farther than actual point
-  function getExactCursorPosition(event: React.PointerEvent<HTMLCanvasElement>) {
+  function getExactCursorPosition(event: React.PointerEvent<HTMLCanvasElement>): Point {
     const canvasVar = event.currentTarget;
     const rectCoordinates = canvasVar.getBoundingClientRect();
 
