@@ -6,6 +6,10 @@ export default function trackerUsingBSP() {
   const [imageName, setImageName] = useState('');
   //State to store if image is uploaded or not for canvas visibility
   const [hasImage, setHasImage] = useState(false);
+  //State to store selected color for brush
+  const [brushColor, setBrushColor] = useState("#00000");
+  // State to store brush size to draw
+  const [brushSize, setBrushSize] = useState(5);
 
 
   function uploadImage(event: React.ChangeEvent<HTMLInputElement>) {
@@ -89,11 +93,13 @@ export default function trackerUsingBSP() {
                   id="brush-color"
                   type="color"
                   className="form-control form-control-color"
+                  value={brushColor}
+                  onChange={(event) => setBrushColor(event?.target.value)}
                 />
               </div>
               <div className="brush-size-input">
                 <label htmlFor="brush-size" className="form-label">
-                  Brush size: 1px
+                  Brush size: {brushSize}px
                 </label>
 
                 <input
@@ -102,7 +108,8 @@ export default function trackerUsingBSP() {
                   className="form-range"
                   min="1"
                   max="50"
-                  value={10}
+                  value={brushSize}
+                  onChange={(event) => setBrushSize(Number(event.target.value))}
                 />
               </div>
             </div>
