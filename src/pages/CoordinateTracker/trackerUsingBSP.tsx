@@ -161,18 +161,12 @@ export default function trackerUsingBSP() {
       // ]
 
       return [
-        {
-          minCoords: [Math.round(Math.min(...xValues)), Math.round(Math.min(...yValues))]
-        },
-        {
-          maxCoords: [Math.round(Math.max(...xValues)), Math.round(Math.max(...yValues))]
-        }
-      ];
+        [Math.round(Math.min(...xValues)), Math.round(Math.min(...yValues))],
+        [Math.round(Math.max(...xValues)), Math.round(Math.max(...yValues))]
+      ] 
     });
 
-    const data = {
-      strokeValues
-    };
+    const data = strokeValues;
 
     const jsonFile = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
@@ -192,7 +186,7 @@ export default function trackerUsingBSP() {
     <>
       <div id="coordinate-tracker" className="m-2 p-5 text-center">
         <h1 className="mb-5">Drawn Shape Coordinate Tracker</h1>
-        <div className="text-end">
+        <div className="text-end mb-2">
           <button className="btn btn-success" onClick={downloadCoordinatesJSON} disabled={!hasImage}>
           Download coordinates
         </button>
