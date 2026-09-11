@@ -3,7 +3,9 @@ import { useRef, useState } from "react";
 export default function trackerUsingBSP() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [imageName, setImageName] = useState('')
+  const [imageName, setImageName] = useState('');
+  //State to store if image is uploaded or not for canvas visibility
+  const [hasImage, setHasImage] = useState(false);
 
 
   function uploadImage(event: React.ChangeEvent<HTMLInputElement>) {
@@ -20,7 +22,25 @@ export default function trackerUsingBSP() {
     const imageURL = URL.createObjectURL(uploadedFile);
 
     imageVar.onload = () => {
+      const canvasVar = canvasRef.current;
+      if(!canvasVar) {
+        console.log("Canvas Not mounted");
+        return;
+      }
+
+      const maxSize = 500;
+      // scaling uploaded image based on max size
+      const scale = Math.min(maxSize/imageVar.width, maxSize/imageVar.height, 1);
+
+      canvasVar.width = Math.round(imageVar.width*scale);
+      canvasVar.height = Math.round(imageVar.height*scale);
+
+      const canvasContext = canvasVar.getContext("2d");
+      canvasContext?.drawImage(imageVar, 0, 0, canvasVar.width, canvasVar.height);
+
+      URL.revokeObjectURL(imageURL);
       setImageName(uploadedFile.name);
+      setHasImage(true);
     }
 
     imageVar.src = imageURL;
@@ -41,7 +61,7 @@ export default function trackerUsingBSP() {
           <div className="img-output border-end p-5 center w-50">
             <canvas
               ref={canvasRef}
-              className={`border rounded mw-100`}
+              className={`border rounded mw-100 ${hasImage ? "" : "d-none"}`}
               style={{ cursor: "crosshair", touchAction: "none" }}
             />
           </div>
