@@ -55,7 +55,7 @@ export default function trackerUsingBSP() {
       URL.revokeObjectURL(imageURL);
       setImageName(uploadedFile.name);
       setHasImage(true);
-    }
+    };
 
     imageVar.src = imageURL;
     console.log("Image Var: ", imageVar);
@@ -137,12 +137,50 @@ export default function trackerUsingBSP() {
     currentStrokeRef.current = null;
   }
 
+  function downloadCoordinatesJSON() {
+    const strokeValues = strokesRef.current.map((points, index) => {
+      const leftmostPoint = points.reduce((leftmost, point) =>
+        point.x < leftmost.x ? point : leftmost
+      )
+
+      const rightmostPoint = points.reduce((rightmost, point) =>
+        point.x > rightmost.x ? point : rightmost
+      )
+
+      return [
+        {
+          minPoints: [Math.round(leftmostPoint.x), Math.round(leftmostPoint.y)]
+        },
+        {
+          maxPoints: [Math.round(rightmostPoint.x), Math.round(rightmostPoint.y)]
+        }
+      ]
+    });
+
+    const data = {
+      strokeValues
+    };
+
+    const jsonFile = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+
+    const url = URL.createObjectURL(jsonFile);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = "shape-coordinates.json";
+    link.click();
+
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <>
       <div id="coordinate-tracker" className="m-2 p-5 text-center">
         <h1 className="mb-5">Drawn Shape Coordinate Tracker</h1>
         <div className="text-end">
-          <button className="btn btn-success" disabled={false}>
+          <button className="btn btn-success" onClick={downloadCoordinatesJSON} disabled={!hasImage}>
           Download coordinates
         </button>
         </div>
