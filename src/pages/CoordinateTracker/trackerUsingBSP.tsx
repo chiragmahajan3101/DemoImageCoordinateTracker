@@ -147,14 +147,27 @@ export default function trackerUsingBSP() {
         point.x > rightmost.x ? point : rightmost
       )
 
+      const xValues = points.map((point) => point.x);
+      const yValues = points.map((point) => point.y);
+
+      // Retruning leftmost and rightmost points logic
+      // return [
+      //   {
+      //     minPoints: [Math.round(leftmostPoint.x), Math.round(leftmostPoint.y)]
+      //   },
+      //   {
+      //     maxPoints: [Math.round(rightmostPoint.x), Math.round(rightmostPoint.y)]
+      //   }
+      // ]
+
       return [
         {
-          minPoints: [Math.round(leftmostPoint.x), Math.round(leftmostPoint.y)]
+          minCoords: [Math.round(Math.min(...xValues)), Math.round(Math.min(...yValues))]
         },
         {
-          maxPoints: [Math.round(rightmostPoint.x), Math.round(rightmostPoint.y)]
+          maxCoords: [Math.round(Math.max(...xValues)), Math.round(Math.max(...yValues))]
         }
-      ]
+      ];
     });
 
     const data = {
