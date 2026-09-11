@@ -12,6 +12,12 @@ export default function trackerUsingBSP() {
   const [brushSize, setBrushSize] = useState(5);
 
 
+  // Ref to not render anything on change of its values
+  const strokesRef = useRef<any>([]);
+  const currentStrokeRef = useRef<any | null>(null);
+  const isDrawingRef = useRef(false);
+
+
   function uploadImage(event: React.ChangeEvent<HTMLInputElement>) {
     console.log(event.target.files);
     const uploadedFile = event.target.files?.[0];
@@ -52,6 +58,81 @@ export default function trackerUsingBSP() {
 
   }
 
+  // Function to return exact point coordinates to draw as normally drawing on canvas is a slight farther than actual point
+  function getExactCursorPosition(event: React.PointerEvent<HTMLCanvasElement>) {
+    const canvasVar = event.currentTarget;
+    const rectCoordinates = canvasVar.getBoundingClientRect();
+
+    return {
+      x: (event.clientX - rectCoordinates.left) * (canvasVar.width / rectCoordinates.width),
+      y: (event.clientY - rectCoordinates.top) * (canvasVar.height / rectCoordinates.height),
+    };
+  }
+
+
+  function startDrawing(event: React.PointerEvent<HTMLCanvasElement>) {
+    if(!hasImage) {
+      console.log("Cant Draw as no image is uploaded");
+      return;
+    }
+
+    const canvasVar = canvasRef.current;
+    const canvasContext = canvasVar?.getContext("2d");
+
+    if(!canvasVar || !canvasContext) {
+      console.error("Canvas not mounted properly");
+      return;
+    }
+
+    const currentPointCoordinates = getExactCursorPosition(event);
+    console.log("Mouse is clicked here: ", currentPointCoordinates);
+    console.log("Started Drawing on Image");
+    
+    const newStroke = [currentPointCoordinates];
+    strokesRef.current.push(newStroke);
+    currentStrokeRef.current = newStroke;
+    isDrawingRef.current = true;
+
+    canvasVar.setPointerCapture(event.pointerId);
+
+    canvasContext.beginPath();
+    canvasContext.moveTo(currentPointCoordinates.x, currentPointCoordinates.y);
+    canvasContext.strokeStyle = brushColor;
+    canvasContext.lineWidth = brushSize;
+    canvasContext.lineCap = "round";
+    canvasContext.lineJoin = "round";
+  }
+
+  function draw(event: React.PointerEvent<HTMLCanvasElement>) {
+    if(!isDrawingRef.current) {
+      console.error("isDrawing state is set to false");
+      return;
+    }
+
+    const canvasVar = canvasRef.current;
+    const canvasContext = canvasVar?.getContext("2d");
+
+    if(!canvasVar || !canvasContext) {
+      console.error("Canvas not mounted properly");
+      return;
+    }
+
+    const currentPointCoordinates = getExactCursorPosition(event);
+
+    // Saving all stroker coordinates in current state
+    currentStrokeRef.current?.push(currentPointCoordinates);
+
+    canvasContext.lineTo(currentPointCoordinates.x, currentPointCoordinates.y);
+    canvasContext.stroke();
+  }
+
+  function stopDrawing() {
+    console.log("Stroker Stopped", currentStrokeRef.current);
+    console.log("storedStroker", strokesRef.current);
+    isDrawingRef.current = false;
+    currentStrokeRef.current = null;
+  }
+
   return (
     <>
       <div id="coordinate-tracker" className="m-2 p-5 text-center">
@@ -65,8 +146,13 @@ export default function trackerUsingBSP() {
           <div className="img-output border-end p-5 center w-50">
             <canvas
               ref={canvasRef}
-              className={`border rounded mw-100 ${hasImage ? "" : "d-none"}`}
+              className={`border mw-100 ${hasImage ? "" : "d-none"}`}
               style={{ cursor: "crosshair", touchAction: "none" }}
+              onPointerDown={startDrawing}
+              onPointerMove={draw}
+              onPointerUp={stopDrawing}
+              onPointerCancel={stopDrawing}
+              onPointerLeave={stopDrawing}
             />
           </div>
           <div className="input p-5 w-50 d-flex flex-column align-items-center">
