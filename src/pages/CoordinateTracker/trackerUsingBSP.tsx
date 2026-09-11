@@ -48,6 +48,10 @@ export default function trackerUsingBSP() {
       const canvasContext = canvasVar.getContext("2d");
       canvasContext?.drawImage(imageVar, 0, 0, canvasVar.width, canvasVar.height);
 
+      // Deleting all the previously stored strokes for fresh image
+      strokesRef.current = [];
+      currentStrokeRef.current = null;
+
       URL.revokeObjectURL(imageURL);
       setImageName(uploadedFile.name);
       setHasImage(true);
