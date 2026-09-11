@@ -1,7 +1,32 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export default function trackerUsingBSP() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const [imageName, setImageName] = useState('')
+
+
+  function uploadImage(event: React.ChangeEvent<HTMLInputElement>) {
+    console.log(event.target.files);
+    const uploadedFile = event.target.files?.[0];
+
+    if(!uploadedFile) {
+      console.log("Image Not Uploaded Successfully");
+      // To avoid any upload issue and typescript strict checks
+      return;
+    }
+
+    const imageVar = new Image();
+    const imageURL = URL.createObjectURL(uploadedFile);
+
+    imageVar.onload = () => {
+      setImageName(uploadedFile.name);
+    }
+
+    imageVar.src = imageURL;
+    console.log("Image Var: ", imageVar);
+
+  }
 
   return (
     <>
@@ -25,12 +50,13 @@ export default function trackerUsingBSP() {
               <label htmlFor="image-upload" className="btn btn-primary">
                 Upload image
               </label>
-              <span className="ms-3 text-muted">{"No image selected"}</span>
+              <span className="ms-3 text-muted">{imageName || "No image selected"}</span>
               <input
                 id="image-upload"
                 type="file"
                 accept="image/*"
                 className="d-none"
+                onChange={uploadImage}
               />
             </div>
             <div className="brush-input d-flex flex-row justify-content-between">
