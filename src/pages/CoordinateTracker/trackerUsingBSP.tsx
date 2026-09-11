@@ -1,17 +1,68 @@
-function trackerUsingBSP() {
+import { useRef } from "react";
+
+export default function trackerUsingBSP() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
   return (
     <>
-      <div id="coordinate-tracker">
-        <h1>Hello World</h1>
-        <div className="img-output">
-
+      <div id="coordinate-tracker" className="m-2 p-5 text-center">
+        <h1 className="mb-5">Drawn Shape Coordinate Tracker</h1>
+        <div className="text-end">
+          <button className="btn btn-success" disabled={false}>
+          Download coordinates
+        </button>
         </div>
-        <div className="img-input">
+        <div className="d-flex tracker-section justify-content-center border w-100">
+          <div className="img-output border-end p-5 center w-50">
+            <canvas
+              ref={canvasRef}
+              className={`border rounded mw-100`}
+              style={{ cursor: "crosshair", touchAction: "none" }}
+            />
+          </div>
+          <div className="input p-5 w-50 d-flex flex-column align-items-center">
+            <div className="img-input mb-5">
+              <label htmlFor="image-upload" className="btn btn-primary">
+                Upload image
+              </label>
+              <span className="ms-3 text-muted">{"No image selected"}</span>
+              <input
+                id="image-upload"
+                type="file"
+                accept="image/*"
+                className="d-none"
+              />
+            </div>
+            <div className="brush-input d-flex flex-row justify-content-between">
+              <div className="brush-color-input">
+                <label htmlFor="brush-color" className="form-label d-block">
+                  Brush Color
+                </label>
 
+                <input
+                  id="brush-color"
+                  type="color"
+                  className="form-control form-control-color"
+                />
+              </div>
+              <div className="brush-size-input">
+                <label htmlFor="brush-size" className="form-label">
+                  Brush size: 1px
+                </label>
+
+                <input
+                  id="brush-size"
+                  type="range"
+                  className="form-range"
+                  min="1"
+                  max="50"
+                  value={10}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>
   );
 }
-
-export default trackerUsingBSP;
